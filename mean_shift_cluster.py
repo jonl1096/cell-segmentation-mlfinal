@@ -40,10 +40,10 @@ def cluster(S, L, m, R, bandwidth = 1):
 # voxel_2 is the voxel prior to the most recent update
 # bandwidth allows us to change how we want our data to converge
 def check_converged(voxel_1, voxel_2, bandwidth):
-    diff = voxel_1 - voxel_2
-    for item in diff:
-        if not abs(item) < .001 * bandwidth:    
-            return False                        
+    dist = np.linalg.norm(voxel_1 - voxel_2)
+    if abs(dist) < .001 * bandwidth:    
+        return True
+    return False                        
 
 
 # a is the voxel
