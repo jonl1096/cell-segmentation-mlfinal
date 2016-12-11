@@ -30,7 +30,7 @@ def cluster(S, L, m, R, bandwidth = 1):
             c = np.zeros(len(c))
             for q in L:
                 c += (m.get(q) * q * spherical_kernel(prev - q, R)) / Z
-            converged = check_converged(c, prev)
+            converged = check_converged(c, prev, bandwidth)
         C_set.add(c)
     return C_set
 
