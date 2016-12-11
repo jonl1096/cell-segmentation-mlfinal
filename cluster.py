@@ -2,10 +2,16 @@
 # Marc Feldman (mfeldm21)
 # Jonathan Liu (jliu118)
 
+# https://github.com/paolo-f/bcfind/blob/master/bcfind/mscd.py
+# In this, they have a variable bandwidth. Need to figure out what that 
+# is for us because it is used to find threshold value.
+
 import numpy as np
 
 R = 0 # need some sort of value for R here, determined somewhere else
       # see comment for spherical_kernel
+
+bandwidth = 1 # need some value here...
 
 # S set of seeds (described in Section 2.2.4)
 # L set of voxels whose intensity exceeds the background threshold
@@ -22,6 +28,7 @@ def cluster(S, L, m):
     for p in S:
         c = p
         converged = False
+        # not sure if implemented correctly?
         while not converged:
             prev = c
             c = np.zeros(len(c))
@@ -36,10 +43,11 @@ def cluster(S, L, m):
 # voxel_1 is the voxel after the most recent update
 # voxel_2 is the voxel prior to the most recent update
 def check_converged(voxel_1, voxel_2):
+    global bandwidth
     diff = voxel_1 - voxel_2
     for item in diff:
-        if not abs(item) < .001:    # need some threshold value (not sure if this is 
-            return False            # right, but we need some way to check convergence)
+        if not abs(item) < .001 * bandwidth:    # need some threshold value (not sure if this is 
+            return False                        # right, but we need some way to check convergence)
 
 
 # a is the voxel
