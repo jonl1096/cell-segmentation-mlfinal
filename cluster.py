@@ -14,7 +14,7 @@ def cluster(S, L, m):
     global R
     Z = 0
     for p in L:
-        Z += m.get(p)   # m returns the intensity of a Voxel
+        Z += m.get(p)   # m returns the intensity of a voxel
                         # This is pseudocodey here, can't use p as key
 
     C_set = set()
@@ -32,14 +32,17 @@ def cluster(S, L, m):
     return C_set
 
 
-def check_converged(c, prev):
-    test = c - prev
-    for item in test:
+# used to see if a voxel has converged yet
+# voxel_1 is the voxel after the most recent update
+# voxel_2 is the voxel prior to the most recent update
+def check_converged(voxel_1, voxel_2):
+    diff = voxel_1 - voxel_2
+    for item in diff:
         if not abs(item) < .001:    # need some threshold value (not sure if this is 
             return False            # right, but we need some way to check convergence)
 
 
-# a is the vector
+# a is the voxel
 # R is a parameter that should be smaller than the expected radius of a cell
 def spherical_kernel(a, R):
     if np.linalg.norm(a) < R:
