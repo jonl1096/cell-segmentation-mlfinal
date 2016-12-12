@@ -27,9 +27,10 @@ def cluster(points, kernel_bandwidth = 1):
             if dist < MIN_DISTANCE:
                 still_shifting[i] = False
             shift_points[i] = p_new
-    group_assignments = group_points(shift_points.tolist())
-    iteration_number += 1
-    return MeanShiftResult(points, shift_points, group_assignments)
+    return shift_points
+    # group_assignments = group_points(shift_points.tolist())
+    # iteration_number += 1
+    # return MeanShiftResult(points, shift_points, group_assignments)
 
 
 def shift_point(self, point, points, kernel_bandwidth):
@@ -68,23 +69,12 @@ def euc_dist(vect1, vect2):
     return np.linalg.norm(vect1 - vect2)
 
 
-# used to see if a voxel has converged yet
-# voxel_1 is the voxel after the most recent update
-# voxel_2 is the voxel prior to the most recent update
-# bandwidth allows us to change how we want our data to converge
-def check_converged(voxel_1, voxel_2, bandwidth):
-    dist = np.linalg.norm(voxel_1 - voxel_2)
-    if abs(dist) < .001 * bandwidth:
-        return True
-    return False
+def gaussian_kernel(distance, bandwidth):
+    val = (1/(bandwidth*math.sqrt(2*math.pi))) * np.exp(-0.5*((distance / bandwidth))**2)
+    return val
 
 
-# a is the voxel
-# R is a parameter that should be smaller than the expected radius of a cell
-def spherical_kernel(a, R):
-    if np.linalg.norm(a) < R:
-        return 1
-    return 0
+
 
 def group_points(self, points):
     group_assignment = []
