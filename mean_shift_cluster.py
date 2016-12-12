@@ -8,16 +8,12 @@
 
 import numpy as np
 
-R = 0 # need some sort of value for R here, determined somewhere else
-      # see comment for spherical_kernel
-
-bandwidth = 1 # need some value here...
-
 # S set of seeds (described in Section 2.2.4)
 # L set of voxels whose intensity exceeds the background threshold
 # m returns the intensity of a voxel
-def cluster(S, L, m):
-    global R
+# R is the radius used for the kernel
+# bandwidth is a value that allows us to change the convergence threshold
+def cluster(S, L, m, R, bandwidth = 1):
     Z = 0
     for p in L:
         Z += m.get(p)   # m returns the intensity of a voxel
@@ -34,7 +30,7 @@ def cluster(S, L, m):
             c = np.zeros(len(c))
             for q in L:
                 c += (m.get(q) * q * spherical_kernel(prev - q, R)) / Z
-            converged = check_converged(c, prev)
+            converged = check_converged(c, prev, bandwidth)
         C_set.add(c)
     return C_set
 
@@ -42,12 +38,12 @@ def cluster(S, L, m):
 # used to see if a voxel has converged yet
 # voxel_1 is the voxel after the most recent update
 # voxel_2 is the voxel prior to the most recent update
-def check_converged(voxel_1, voxel_2):
-    global bandwidth
-    diff = voxel_1 - voxel_2
-    for item in diff:
-        if not abs(item) < .001 * bandwidth:    # need some threshold value (not sure if this is 
-            return False                        # right, but we need some way to check convergence)
+# bandwidth allows us to change how we want our data to converge
+def check_converged(voxel_1, voxel_2, bandwidth):
+    dist = np.linalg.norm(voxel_1 - voxel_2)
+    if abs(dist) < .001 * bandwidth:    
+        return True
+    return False                        
 
 
 # a is the voxel
