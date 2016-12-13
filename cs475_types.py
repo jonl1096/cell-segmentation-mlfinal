@@ -25,7 +25,7 @@ class FeatureVector:
         self.dict = {}
         
     def add(self, index, value):
-        self.dict[index - 1] = value
+        self.dict[index] = value
         
     def get(self, index):
         if index in self.dict:
