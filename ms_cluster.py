@@ -1,59 +1,45 @@
+# Marc Feldman (mfeldm21)
+# Jonathan Liu (jliu118)
+
 import math
-import sys
 import numpy as np
 
-MIN_DISTANCE = 0.000001
+def ms_cluster(data, max_index, threshold = .01, bandwidth = 1):
+    moved_data = data
+    max_min = 1
+    prev_max_min = 0
 
-
-def ms_cluster(points, kernel_bandwidth=1):
-    shift_points = points
-    max_min_dist = 1
-    prev_max_min_dist = 0
-
-    still_shifting = [True] * points.shape[0]
-    while max_min_dist > MIN_DISTANCE:
-        print max_min_dist
-
-        if max_min_dist == prev_max_min_dist:
-            break
-
-        prev_max_min_dist = max_min_dist
-        max_min_dist = 0
-        for i in range(0, len(shift_points)):
-            if not still_shifting[i]:
+    stopped = [False] * data.shape[0]
+    while max_min > threshold && max_min != prev_max_min:
+        prev_max_min = max_min
+        max_min = 0
+        for i in range(0, len(moved_data)):
+            if not stopped[i]:
+                new_instance_start = moved_data[i]
+                new_instance = move_instance(moved_data[i], max_index, data, bandwidth)
+                dist = euclidean_distance(new_instance, new_instance_start)
+                if dist > max_min:
+                    max_min = dist
+                if dist < threshold:
+                    stopped[i] = True
+                moved_data[i] = new_instance
+            else:
                 continue
-            p_new = shift_points[i]
-            p_new_start = p_new
-            p_new = shift_point(p_new, points, kernel_bandwidth)
-            dist = euc_dist(p_new, p_new_start)
-            if dist > max_min_dist:
-                max_min_dist = dist
-            if dist < MIN_DISTANCE:
-                still_shifting[i] = False
-            shift_points[i] = p_new
 
-    return shift_points
+    return moved_data
 
-def shift_point(point, points, kernel_bandwidth):
-    # from http://en.wikipedia.org/wiki/Mean-shift
-    points = np.array(points)
-    # numerator
-    point_distances = np.sqrt(((point - points) ** 2).sum(axis=1))
-    point_weights = gaussian_kernel(point_distances, kernel_bandwidth)
-    tiled_weights = np.tile(point_weights, [len(point), 1])
-    # denominator
-    denominator = sum(point_weights)
-    shifted_point = np.multiply(tiled_weights.transpose(), points).sum(axis=0) / denominator
-    return shifted_point
+def move_instance(instance, max_index, data, bandwidth):
+    data = np.array(data)
+    instance_distances = np.sqrt(((instance - data) ** 2).sum(axis = 1))
+    weights = gaussian_kernel(instance_distances, bandwidth)
+    tiled = np.tile(weights, [max_index, 1])
+    shifted_instance = np.multiply(tiled.transpose(), data).sum(axis = 0) / sum(weights)
+    return shifted_instance
 
 
 def gaussian_kernel(distance, bandwidth):
-    val = (1 / (bandwidth * math.sqrt(2 * math.pi))) * np.exp(-0.5 * ((distance / bandwidth)) ** 2)
-    return val
+    return (1 / (bandwidth * math.sqrt(2 * math.pi))) * np.exp(-0.5 * ((distance / bandwidth)) ** 2)
 
 
-def euc_dist(vect1, vect2):
-    """ Find and returns the euclidian distance between 2 numpy arrays. """
-    return np.linalg.norm(vect1 - vect2)
-
-
+def euclidean_distance(array_1, array_2):
+    return np.linalg.norm(array_1 - array_2)
