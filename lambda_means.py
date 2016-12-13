@@ -6,7 +6,7 @@ class LambdaMeans(Predictor):
     def __init__(self, cluster_lambda, clustering_training_iterations, instances, max_index):
         self.cluster_iterations = clustering_training_iterations
         self.max_index = max_index          # max index of a feature in our data
-        average_instance = {}               # create the first cluster
+        average_instance = [0] * max_index  # create the first cluster
         for i in range(max_index):
             average_instance[i] = instances[0]._feature_vector.get(i)
         for i in range(1, len(instances)):
@@ -41,15 +41,16 @@ class LambdaMeans(Predictor):
                     r_nk.append(k)
                     cluster_count[k] += 1
                 else:
-                    self.cluster_means.append(instance._feature_vector)
+                    new_cluster = []
+                    for i in range(max_index):
+                        new_cluster.append(instance._feature_vector.get(i))
+                    self.cluster_means.append(new_cluster)
                     r_nk.append(self.num_clusters)
                     self.num_clusters += 1
                     cluster_count.append(1)
             # M Step
             for m in range(self.num_clusters):
-                self.cluster_means[m] = {}
-                for n in range(self.max_index):
-                    self.cluster_means[m][n] = 0
+                self.cluster_means[m] = [0] * self.max_index
             for x in range(len(instances)):
                 cluster = r_nk[x]
                 cluster_mean = self.cluster_means[cluster]
@@ -70,8 +71,8 @@ class LambdaMeans(Predictor):
         return best_cluster
 
 
-    def distance(self, vector_a, vector_b):
+    def distance(self, list_a, vector_b):
         total_sum = 0
         for i in range(self.max_index):
-            total_sum += (vector_a.get(i) - vector_b.get(i)) ** 2
+            total_sum += (list_a[i] - vector_b.get(i)) ** 2
         return math.sqrt(total_sum)
