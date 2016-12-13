@@ -14,7 +14,7 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-def array_to_plot(points, resolution, point_size=1.2, outfile_name=""):
+def array_to_plot(points, resolution=(0.01872, 0.01872, 0.005), point_size=1.2, outfile_name=""):
     """Generates the plotly from the numpy array."""
     # Type in the path to your csv file here
     
