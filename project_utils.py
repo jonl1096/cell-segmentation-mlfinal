@@ -14,7 +14,7 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-def array_to_plot(points, token, resolution, outfile_name=""):
+def array_to_plot(points, resolution, point_size=1.2, outfile_name=""):
     """Generates the plotly from the numpy array."""
     # Type in the path to your csv file here
     
@@ -41,7 +41,7 @@ def array_to_plot(points, token, resolution, outfile_name=""):
         z = [x * zResolution for x in thedata[:, 2]],
         mode='markers',
         marker=dict(
-            size=2,
+            size=point_size,
             color='cyan',                # set color to an array/list of desired values
             colorscale='Viridis',   # choose a colorscale
             opacity=0.15
