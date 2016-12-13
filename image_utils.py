@@ -8,32 +8,31 @@ import plotly.graph_objs as graphobjs
 import os
 import errno
 
-def local_hist_equilization(file_path, num_points, resolution=(0.01872, 0.01872, 0.005)):
-    """ Applies local histogram equilization on a .nii file, returns a numpy array of coordinates and intensities. """
+def local_hist_equilization(file_path):
+    """ Applies local histogram equilization on a .nii file, returns img_data() of the histogram equilized image """
 
     im = nib.load(file_path)
 
     im = im.get_data()
-    img = im[:,:,:]
+    img = im[:, :, :]
 
-    shape = im.shape
-    #affine = im.get_affine()
+    img = np.int16(255 * (np.float32(img) / np.float32(np.max(img))))
 
-    x_value = shape[0]
-    y_value = shape[1]
-    z_value = shape[2]
+    flat = img.flatten()
 
-    img_flat = img.reshape(-1)
+    hist, bins = np.histogram(flat, 256, [0, 256])
 
-    img_grey = np.array(img_flat * 255, dtype=np.uint8)
+    cdf = hist.cumsum()
+    cdf_normalized = cdf * hist.max() / cdf.max()
 
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    cdf_m = np.ma.masked_equal(cdf, 0)
+    cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min())
+    cdf = np.ma.filled(cdf_m, 0).astype('uint8')
 
-    temp = clahe.apply(img_grey)
+    img_histeq = cdf[img]
 
-    lhe_img_data = temp.reshape(x_value, y_value, z_value)
+    return img_histeq
 
-    return img_data_to_array(lhe_img_data, 10000)
 
 def img_data_to_array(img_data, num_points):
     """ Converts nibabel img data to a numpy array of coordinates and intensities. """
