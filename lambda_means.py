@@ -13,8 +13,8 @@ class LambdaMeans(Predictor):
             curr_instance = instances[i]
             for feature in curr_instance._feature_vector.keys():
                 average_instance[feature] += curr_instance._feature_vector.get(feature)
-        for feature in average_instance.keys(): 
-            average_instance[feature] /= len(instances)
+        for i in range(max_index): 
+            average_instance[i] /= len(instances)
         self.cluster_means = []             # stores clusters
         self.cluster_means.append(average_instance)
         self.num_clusters = 1               # number of clusters
