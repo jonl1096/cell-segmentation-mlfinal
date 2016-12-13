@@ -1,10 +1,7 @@
-max_index = 0
-
 from cs475_types import ClassificationLabel, FeatureVector, Instance, Predictor
 from lambda_means import LambdaMeans
 
 def load_data(data):
-    global max_index
     instances = []
     for point in data:
 
@@ -20,7 +17,6 @@ def load_data(data):
 
     return instances
 
-def do_lambda_means_clustering(cluster_lambda, clustering_training_iterations, instances):
-    global max_index
+def do_lambda_means_clustering(cluster_lambda, clustering_training_iterations, instances, max_index):
     predictor = LambdaMeans(cluster_lambda, clustering_training_iterations, instances, max_index)
     predictor.train(instances)
