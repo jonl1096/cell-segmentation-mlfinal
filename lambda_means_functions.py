@@ -20,3 +20,4 @@ def load_data(data):
 def do_lambda_means_clustering(cluster_lambda, clustering_training_iterations, instances, max_index):
     predictor = LambdaMeans(cluster_lambda, clustering_training_iterations, instances, max_index)
     predictor.train(instances)
+    return predictor.cluster_means
