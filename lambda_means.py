@@ -42,7 +42,7 @@ class LambdaMeans(Predictor):
                     cluster_count[k] += 1
                 else:
                     new_cluster = []
-                    for i in range(max_index):
+                    for i in range(self.max_index):
                         new_cluster.append(instance._feature_vector.get(i))
                     self.cluster_means.append(new_cluster)
                     r_nk.append(self.num_clusters)
