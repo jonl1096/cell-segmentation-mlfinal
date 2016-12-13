@@ -8,31 +8,42 @@
 
 import numpy as np
 
-# S set of seeds (described in Section 2.2.4)
-# L set of voxels whose intensity exceeds the background threshold
-# m returns the intensity of a voxel
-# R is the radius used for the kernel
-# bandwidth is a value that allows us to change the convergence threshold
-def cluster(S, L, m, R, bandwidth = 1):
+# seeds: set of seeds (described in Section 2.2.4)
+# points: set of voxels whose intensity exceeds the background threshold
+# radius: is the radius used for the kernel
+# bandwidth: is a value that allows us to change the convergence threshold
+def cluster(seeds, points, radius, bandwidth = 1):
     Z = 0
-    for p in L:
-        Z += m.get(p)   # m returns the intensity of a voxel
-                        # This is pseudocodey here, can't use p as key
+    for point in points:
+        Z += point[3]
 
     C_set = set()
 
-    for p in S:
-        c = p
+    for seed in seeds:
         converged = False
-        # not sure if implemented correctly?
+
         while not converged:
-            prev = c
-            c = np.zeros(len(c))
-            for q in L:
-                c += (m.get(q) * q * spherical_kernel(prev - q, R)) / Z
-            converged = check_converged(c, prev, bandwidth)
-        C_set.add(c)
+            prev_seed = seed
+            new_seed = np.zeros(len(seed))
+            for point in points:
+                new_seed += (point[3] * point * spherical_kernel(prev_seed - point, radius)) / Z
+            converged = check_converged(new_seed, prev_seed, bandwidth)
+        C_set.add(new_seed)
     return C_set
+
+
+    # for p in seeds:
+    #     c = p
+    #     converged = False
+    #     # not sure if implemented correctly?
+    #     while not converged:
+    #         prev = c
+    #         c = np.zeros(len(c))
+    #         for q in points:
+    #             c += (intensities[q] * q * spherical_kernel(prev - q, radius)) / Z
+    #         converged = check_converged(c, prev, bandwidth)
+    #     C_set.add(c)
+    # return C_set
 
 
 # used to see if a voxel has converged yet
