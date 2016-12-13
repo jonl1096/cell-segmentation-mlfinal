@@ -51,7 +51,7 @@ def img_data_to_array(img_data, num_points):
 
     # print(temp_data)
 
-    temp_threshold = 0.025
+    temp_threshold = 0.01
     filt = temp_data > temp_threshold * temp_max
     # filt = temp_data
 
